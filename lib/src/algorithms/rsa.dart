@@ -45,7 +45,7 @@ class RSA extends AbstractRSA implements Algorithm {
     _cipher
       ..reset()
       ..init(true, _publicKeyParams!);
-
+    //new clone
     int inputLen = bytes.length;
     int offSet = 0;
     List<int> cache = [];
@@ -66,7 +66,7 @@ class RSA extends AbstractRSA implements Algorithm {
     if (privateKey == null) {
       throw StateError('Can\'t decrypt without a private key, null given.');
     }
-
+    //new clone
     int inputLen = encrypted.bytes.length;
     int offSet = 0;
     List<int> cache = [];
