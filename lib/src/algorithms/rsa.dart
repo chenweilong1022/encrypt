@@ -46,7 +46,19 @@ class RSA extends AbstractRSA implements Algorithm {
       ..reset()
       ..init(true, _publicKeyParams!);
 
-    return Encrypted(_cipher.process(bytes));
+    int inputLen = bytes.length;
+    int offSet = 0;
+    List<int> cache = [];
+    // 剩余长度
+    int remainLength = inputLen;
+    // 对数据分段解密
+    while (remainLength > 0) {
+      final item = _cipher.process(bytes.sublist(offSet,offSet + min(remainLength, 117)));
+      cache.addAll(item.toList());
+      offSet += 117;
+      remainLength = inputLen - offSet;
+    }
+    return Encrypted(Uint8List.fromList(cache));
   }
 
   @override
@@ -55,11 +67,20 @@ class RSA extends AbstractRSA implements Algorithm {
       throw StateError('Can\'t decrypt without a private key, null given.');
     }
 
-    _cipher
-      ..reset()
-      ..init(false, _privateKeyParams!);
-
-    return _cipher.process(encrypted.bytes);
+    int inputLen = encrypted.bytes.length;
+    int offSet = 0;
+    List<int> cache = [];
+    // 剩余长度
+    int remainLength = inputLen;
+    // 对数据分段解密
+    while (remainLength > 0) {
+      final item = _cipher.process(encrypted.bytes.sublist(offSet,offSet + min(remainLength, 128)));
+      cache.addAll(item.toList());
+      print(convert.utf8.decode(item));
+      offSet += 128;
+      remainLength = inputLen - offSet;
+    }
+    return Uint8List.fromList(cache);
   }
 }
 
